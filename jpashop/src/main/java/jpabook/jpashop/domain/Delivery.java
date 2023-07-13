@@ -1,23 +1,27 @@
 package jpabook.jpashop.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
-public class Member {
+public class Delivery {
 
-    @Id @GeneratedValue
-    @Column(name = "MEMBER_ID")
+    @Id
+    @GeneratedValue
     private Long id;
-    @Column(length = 10)
-    private String name;
+
+    @OneToOne(mappedBy = "delivery")
+    private Order order;
+
     private String city;
+
     private String street;
+
     private String zipcode;
 
-    @OneToMany(mappedBy = "member")
-    private List<Order> orders = new ArrayList<>();
+    private DeliveryStatus status;
 
     public Long getId() {
         return id;
@@ -27,20 +31,12 @@ public class Member {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Order getOrder() {
+        return order;
     }
 
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public String getCity() {
@@ -65,5 +61,13 @@ public class Member {
 
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
+    }
+
+    public DeliveryStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DeliveryStatus status) {
+        this.status = status;
     }
 }
