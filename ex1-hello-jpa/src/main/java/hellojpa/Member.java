@@ -42,5 +42,18 @@ public class Member {
 
     public void setTeam(Team team) {
         this.team = team;
+
+        team.getMembers().add(this);
+
+        // 기존 팀에서 빼내는 로직, 바뀌는 팀에 내가 없는지 확인하는 로직 등... 구현해야 할 내용이 많다.
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", team=" + team +  // team.toString()을 호출하게 됨 (무한 루프의 시작)
+                '}';
     }
 }
