@@ -3,7 +3,9 @@ package hellojpa;
 import javax.persistence.*;
 
 @Entity
-public class Member extends BaseEntity {
+public class Member {
+//public class Member extends BaseEntity {
+
 
     @Id
     @GeneratedValue
@@ -21,9 +23,26 @@ public class Member extends BaseEntity {
 //    @ManyToOne(fetch = FetchType.EAGER)
     private Team team;
 
+    @Embedded
+    private Period workPeriod;
+
+    @Embedded
+    private Address homeAddress;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="city", column = @Column(name = "WORK_CITY")),
+            @AttributeOverride(name="street", column = @Column(name = "WORK_STREET")),
+            @AttributeOverride(name="zipcode", column = @Column(name = "WORK_ZIPCODE")),
+    })
+    private Address workAddress;
+
+
+
     @OneToOne
     @JoinColumn(name = "LOCKER_ID")
     private Locker locker;
+
 
     public Long getId() {
         return id;

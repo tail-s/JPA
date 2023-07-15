@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.*;
+
 @Entity
 @Table(name = "ORDERS")
 public class Order extends BaseEntity {
@@ -15,15 +18,15 @@ public class Order extends BaseEntity {
 
 //    @Column(name = "MEMBER_ID")
 //    private Long memberId;
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;  // Member 클래스에 컬렉션을 넣으면 양방향 매핑이 됨. 설계 시 단방향으로 구현 후 개발 중 필요 시 추가
 
-    @OneToOne
+    @OneToOne(fetch = LAZY, cascade = ALL)
     @JoinColumn(name = "DELIVERY_ID")
     private Delivery delivery;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     public void addOrderItem(OrderItem orderItem) {
