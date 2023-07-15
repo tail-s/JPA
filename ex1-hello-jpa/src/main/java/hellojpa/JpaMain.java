@@ -4,19 +4,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 /**
- * 양방향 매핑 정리
+ * 프록시와 즉시로딩 주의
  *
- * 1. 단방향 매핑만으로도 이미 연관관계 매핑은 완료
+ * 1. 가급적 지연 로딩만 사용 (특히 실무에서)
  *
- * 2. 양방향 매핑은 반대 방향으로 조회(객체 그래프 탐색) 기능이 추가된 것 뿐
+ * 2. 즉시 로딩을 적용하면 예상하지 못한 SQL이 발생
  *
- * 3. JPQL에서 역방향으로 탐색할 일이 많음
+ * 3. 즉시 로딩은 JPQL에서 N+1 문제를 일으킨다.
  *
- * 4. 단방향 매핑을 잘 하고 양방향은 필요할 때 추가해도 됨 (테이블에 영향을 주지 않음) -> 객체 입장에서 양방향 매핑 시 이득이 별로 없음 (연관관계 편의 메소드 생성 등 고민거리만 많아짐)
+ * 4. @ManyToOne, @OneToOne은 기본이 즉시 로딩 -> LAZY로 설정
  *
- * 5. 비즈니스 로직을 기준으로 연관관계의 주인을 선택하기보다(연과관계 편의 메소드 구현 위치로 해결) 외래 키의 위치를 기준으로 정하는 것이 성능이나 운영 등 다양한 관점에서 좋음
+ * 5. @OneToMany, @ManyToMany는 기본이 지연로딩
  */
 public class JpaMain {
 
@@ -29,29 +30,34 @@ public class JpaMain {
 
         try {
 
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Team teamB = new Team();
+            team.setName("teamB");
+            em.persist(teamB);
+
             Member member1 = new Member();
             member1.setUsername("member1");
+            member1.setTeam(team);
             em.persist(member1);
 
             Member member2 = new Member();
             member2.setUsername("member2");
+            member2.setTeam(teamB);
             em.persist(member2);
 
             em.flush();
             em.clear();
 
-            Member m1 = em.find(Member.class, member1.getId());
-            Member m2 = em.find(Member.class, member2.getId());
+//            Member m = em.find(Member.class, member1.getId());
+//            System.out.println("m = " + m.getTeam().getClass());
 
-            System.out.println("m1, m2 " + (m1 == m2));
+            List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class).getResultList();
 
-//            Member m1 = em.find(Member.class, member1.getId());
-//            Member m2 = em.getReference(Member.class, member2.getId());
-//
-//            System.out.println("m1, m2 " + (m1 instanceof Member));
-//            System.out.println("m1, m2 " + (m2 instanceof Member));
-
-
+            // SQL : select * from Member
+            // SQL : select * from Team where TEAM_ID = xxx...
 
 
 
