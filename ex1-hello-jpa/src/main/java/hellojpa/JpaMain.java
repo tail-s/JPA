@@ -4,6 +4,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -30,22 +33,27 @@ public class JpaMain {
 
         try {
 
-            Address address = new Address("city", "street", "10000");
-
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setHomeAddress(address);
-            em.persist(member);
-
-            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
-
-            Member member2 = new Member();
-            member2.setUsername("member2");
-            member2.setHomeAddress(copyAddress); // member2에 영향을 끼치지 않기 위해 복사본(copyAddress)를 set한다.
-            em.persist(member2);
+//            // JPQL
+//            List<Member> result = em.createQuery("select m from Member as m where m.username like '%kim'").getResultList();
+//
+//            for (Member m : result) {
+//                System.out.println("member = " + m);
+//            }
 
 
-//            member.getHomeAddress().setCity("newCity"); Address 객체의 set을 구현하지 않으면 (혹은 private으로 구현하면) 불변객체로 활용. 값을 바꿀 때에는 Address를 새로 만들어서 member에 다시 지정해야 함.
+
+//            // Criteria -> 동적으로 작성 가능하나 유지보수가 힘들다 (복잡하고 실용성이 없다.)
+//            CriteriaBuilder cb = em.getCriteriaBuilder();
+//            CriteriaQuery<Member> query = cb.createQuery(Member.class);
+//
+//            Root<Member> m = query.from(Member.class);
+//
+//            CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("username"), "kim"));
+//            List<Member> resultList = em.createQuery(cq).getResultList();
+
+
+
+            // Q
 
             tx.commit();
         } catch (Exception e) {
