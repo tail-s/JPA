@@ -30,25 +30,22 @@ public class JpaMain {
 
         try {
 
-            Child child1 = new Child();
-            Child child2 = new Child();
+            Address address = new Address("city", "street", "10000");
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setHomeAddress(address);
+            em.persist(member);
 
-            em.persist(parent);
-//            em.persist(child1);   cascade 설정 시 이 코드들은 자동으로 실행됨. 보통 child마다 parent가 하나일 때 (소유자가 하나인 경우) cascade 사용. cascade는 mapping과 별개
-//            em.persist(child2);
+            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
 
-            em.flush();
-            em.clear();
-
-            // orphanRemoval은 주의해서 사용. 특정 엔티티가 개인 소유할 때 사용
-            Parent findParent = em.find(Parent.class, parent.getId());
-            findParent.getChildList().remove(0);
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setHomeAddress(copyAddress); // member2에 영향을 끼치지 않기 위해 복사본(copyAddress)를 set한다.
+            em.persist(member2);
 
 
+//            member.getHomeAddress().setCity("newCity"); Address 객체의 set을 구현하지 않으면 (혹은 private으로 구현하면) 불변객체로 활용. 값을 바꿀 때에는 Address를 새로 만들어서 member에 다시 지정해야 함.
 
             tx.commit();
         } catch (Exception e) {
